@@ -1,5 +1,7 @@
 #!/bin/bash
 
+dos2unix main_script.sh
+
 # Define an array of folder names
 folders=(
   "00_Raw_Data"
@@ -11,7 +13,11 @@ folders=(
   "06_Protein_Modeling"
 )
 
+
 # Create each folder if it does not exist
-for folder in "${folders[@]}"; do
+for folder in ${folders[@]}; do
   mkdir -p "$folder"
 done
+
+
+sudo dpkg -i mega_11.0.13-1_amd64.deb

@@ -8,3 +8,7 @@ conda create -n PlantBarcodeScanner_env
 conda activate PlantBarcodeScanner_env
 
 conda deactivate
+
+# Preparation some dependencies. 
+
+sudo apt install dos2unix
