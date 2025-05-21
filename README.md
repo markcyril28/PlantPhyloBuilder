@@ -38,8 +38,7 @@ conda deactivate
 
    * Choose **Ubuntu/Debian**, **Command Line (CC)**, and version **MEGA 11**.
    * Place the downloaded `.deb` file in your working directory.
-
-2. Install using:
+   * Install using:
 
 ```bash
 sudo dpkg -i mega_11.0.13-1_amd64.deb
