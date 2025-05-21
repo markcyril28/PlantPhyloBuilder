@@ -45,7 +45,7 @@ conda deactivate
 sudo dpkg -i mega_11.0.13-1_amd64.deb
 ```
 
-2. Install Clustal Omega (clustalo) from conda using the script below. 
+2. Install Clustal Omega (clustalo) from conda using the script below while inside the conda environment.
 
 ```bash
 conda install clustalo
