@@ -1,4 +1,4 @@
-# PlantBarcodeScanner_TutTut
+# PlantBarcodeScanner_and_PhytoReceiptMaker
 Post-processing pipeline for plant barcoding genes such ITS, matK, and rbcl.
 
 # Creating a conda environment
