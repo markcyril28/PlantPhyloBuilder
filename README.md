@@ -22,7 +22,7 @@ bash Miniconda3-latest-Linux-x86_64.sh
 source ~/.bashrc
 ````
 
-### Creating a Conda Environment – Basic Cheatsheet
+### Creating a Conda Environment: Basic Cheatsheet
 
 ```bash
 conda create -n PlantBarcodeScanner_env
