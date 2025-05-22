@@ -15,3 +15,5 @@ folders=(
 for folder in ${folders[@]}; do
   mkdir -p "$folder"
 done
+
+megacc -a infer_ML_nucleotide.mao -d test_data.fas -o JRO_ML_tree_1000.nwks
