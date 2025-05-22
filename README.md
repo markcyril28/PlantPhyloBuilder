@@ -34,7 +34,7 @@ conda deactivate
 
 ## 3. Preparation of Some Dependencies
 
-1. Download **megacc** (MEGA Command-line version):
+1. Download **megacc** (MEGA Command-line version) from their [official website](https://www.megasoftware.net/):
 
    * Choose **Ubuntu/Debian**, **Command Line (CC)**, and version **MEGA 11**.
    * Place the downloaded `.deb` file in your working directory.
