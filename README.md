@@ -32,8 +32,12 @@ conda deactivate
 
 ---
 
-## 3. Preparation of Some Dependencies
+## 3. Preparation of Some Dependencies and Softwares 
 
+### UniPro Gene for viewing of the sequences
+1. Download UniProf UGENE from their [official websites](https://ugene.net/download-all.html). 
+
+### MEGA Command Line Version
 1. Download **megacc** (MEGA Command-line version) from their [official website](https://www.megasoftware.net/):
 
    * Choose **Ubuntu/Debian**, **Command Line (CC)**, and version **MEGA 11**.
