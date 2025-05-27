@@ -32,7 +32,7 @@ conda deactivate
 
 ---
 
-## 3. Preparation of Some Dependencies and Softwares 
+## 3. Preparation of Some Dependencies and Softwares. 
 
 ### UniPro Gene for viewing and 01_Quality_Control of the sequences.
 1. Download UniPro UGENE from their [official websites](https://ugene.net/download-all.html). 
@@ -50,7 +50,7 @@ conda deactivate
 sudo dpkg -i mega_11.0.13-1_amd64.deb
 ```
 
-### Clustal Omega for Multiple Sequence Alignment (MSA)
+### Clustal Omega for Multiple Sequence Alignment (MSA).
 2. Install Clustal Omega (clustalo) from conda using the script below while inside the conda environment.
 
 ```bash
