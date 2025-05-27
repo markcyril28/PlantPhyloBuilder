@@ -5,14 +5,13 @@ Post-processing pipeline for plant barcoding genes such as *ITS*, *matK*, and *r
 
 ---
 
-## 1. Activate your WSL
+## A. Preparation of the Environment and Dependencies.
+### 1. Activate your WSL
 
 - Tutorial: [How to Install WSL](https://www.youtube.com/watch?v=5RTSlby-l9w)  
   **Note:** Install **Ubuntu 22** instead of the version shown.
 
----
-
-## 2. Downloading and Initializing Conda
+### 2. Downloading and Initializing Conda
 
 Reference: [Installing Miniconda on Linux](https://www.anaconda.com/docs/getting-started/miniconda/install#linux-terminal-installer)
 
@@ -22,7 +21,7 @@ bash Miniconda3-latest-Linux-x86_64.sh
 source ~/.bashrc
 ````
 
-### Creating a Conda Environment: Basic Cheatsheet
+### 3. Creating a Conda Environment: Basic Cheatsheet
 
 ```bash
 conda create -n PlantBarcodeScanner_env
@@ -32,7 +31,7 @@ conda deactivate
 
 ---
 
-## 3. Preparation of Some Dependencies and Softwares. 
+## B. Preparation of Softwares and Website to be used. 
 
 ### UniPro Gene for viewing and 01_Quality_Control of the sequences.
 1. Download UniPro UGENE from their [official websites](https://ugene.net/download-all.html). 
@@ -50,7 +49,7 @@ conda deactivate
 sudo dpkg -i mega_11.0.13-1_amd64.deb
 ```
 
-### Clustal Omega for Multiple Sequence Alignment (MSA).
+### Clustal Omega for 04_Multiple_Sequence_Alignment.
 
 #### Command-line version 
 1. Open WSL. Activate your conda environment for your analysis.  
