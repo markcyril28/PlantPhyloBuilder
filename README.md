@@ -35,7 +35,9 @@ conda deactivate
 ## 3. Preparation of Some Dependencies and Softwares 
 
 ### UniPro Gene for viewing of the sequences
-1. Download UniProf UGENE from their [official websites](https://ugene.net/download-all.html). 
+1. Download UniPro UGENE from their [official websites](https://ugene.net/download-all.html). 
+2. Install the UniPro UGENE. 
+3. View the ab1 file in the UniPro UGENE software. 
 
 ### MEGA Command Line Version
 1. Download **megacc** (MEGA Command-line version) from their [official website](https://www.megasoftware.net/):
