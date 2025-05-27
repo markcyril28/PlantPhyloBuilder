@@ -50,9 +50,9 @@ conda deactivate
 sudo dpkg -i mega_11.0.13-1_amd64.deb
 ```
 
+### Clustal Omega for Multiple Sequence Alignment (MSA)
 2. Install Clustal Omega (clustalo) from conda using the script below while inside the conda environment.
 
 ```bash
 conda install clustalo
 ```
-
