@@ -60,6 +60,6 @@ sudo dpkg -i mega_11.0.13-1_amd64.deb
 conda install clustalo
 ```
 #### Website version. 
-1. Go to from their [website](https://www.ebi.ac.uk/jdispatcher/msa/clustalo). 
+1. Go to their [website](https://www.ebi.ac.uk/jdispatcher/msa/clustalo). 
 2. Input your sequence. 
 3. Wait for the result. 
