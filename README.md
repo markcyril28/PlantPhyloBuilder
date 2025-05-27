@@ -51,8 +51,14 @@ sudo dpkg -i mega_11.0.13-1_amd64.deb
 ```
 
 ### Clustal Omega for Multiple Sequence Alignment (MSA).
+
+#### Command-line version 
+1. Open WSL. Activate your conda environment for your analysis.  
 2. Install Clustal Omega (clustalo) from conda using the script below while inside the conda environment.
 
 ```bash
 conda install clustalo
 ```
+#### Website version. 
+1. Go to this website. 
+2. Input the sequence. 
