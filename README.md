@@ -8,7 +8,6 @@
 - Tutorial: [How to Install WSL](https://www.youtube.com/watch?v=5RTSlby-l9w)  
 ### **BIG NOTE:** Install **Ubuntu 22** instead. 
 
-
 ---
 
 ## B. Preparation of Softwares and Website to be used. 
