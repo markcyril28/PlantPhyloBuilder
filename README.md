@@ -1,4 +1,4 @@
-# PlantPhyloBuilder (This markdown file is still in Work in Progress)
+# PlantPhyloBuilder 
 
 ---
 
@@ -8,15 +8,6 @@
 - Tutorial: [How to Install WSL](https://www.youtube.com/watch?v=5RTSlby-l9w)  
 ### **BIG NOTE:** Install **Ubuntu 22** instead. 
 
-### 2. Downloading and Initializing Conda
-
-Reference: [Installing Miniconda on Linux](https://www.anaconda.com/docs/getting-started/miniconda/install#linux-terminal-installer)
-
-```bash
-wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-bash Miniconda3-latest-Linux-x86_64.sh
-source ~/.bashrc
-````
 
 ---
 
