@@ -3,14 +3,14 @@
 # Define an array of folder names
 folders=(
 
-  "04_Multiple_Sequence_Alignment"
-  "05_Phylogenetic_Analysis"
-
 )
-
+s
 # Create each folder if it does not exist
 for folder in ${folders[@]}; do
   mkdir -p "$folder"
 done
 
-megacc -a infer_ML_nucleotide_TEST.mao -d test_data.fas -o JRO_ML_tree_1000.nwks
+megacc \
+  -a 1_CONFIG_FILES/infer_ML_nucleotide_TEST.mao \
+  -d 0_INPUT_RAW_FASTA_and_ALIGNMENT/test_data.fas \
+  -o Nucleotide_ML_tree_1000.nwks

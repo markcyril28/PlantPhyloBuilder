@@ -1,4 +1,4 @@
-# PlantBarcodeScanner_and_PhytoReceiptMaker
+# PlantBarcodeScanner_and_PhytoReceiptMaker (This markdown file is work in progress)
 
 ---
 
