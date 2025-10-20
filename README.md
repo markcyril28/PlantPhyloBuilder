@@ -6,7 +6,7 @@
 ### 1. Activate your WSL
 
 - Tutorial: [How to Install WSL](https://www.youtube.com/watch?v=5RTSlby-l9w)  
-  **Note:** Install **Ubuntu 22** instead of the version shown.
+### **BIG NOTE:** Install **Ubuntu 22** instead. 
 
 ### 2. Downloading and Initializing Conda
 
