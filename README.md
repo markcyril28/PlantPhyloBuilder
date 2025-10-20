@@ -1,7 +1,4 @@
-
 # PlantBarcodeScanner_and_PhytoReceiptMaker
-
-Post-processing pipeline for plant barcoding genes such as *ITS*, *matK*, and *rbcL*.
 
 ---
 
@@ -24,8 +21,8 @@ source ~/.bashrc
 ### 3. Creating a Conda Environment: Basic Cheatsheet
 
 ```bash
-conda create -n PlantBarcodeScanner_env
-conda activate PlantBarcodeScanner_env
+conda create -n PlantPhyloBuilder_ENV
+conda activate PlantPhyloBuilder_ENV
 conda deactivate
 ```
 
@@ -33,15 +30,10 @@ conda deactivate
 
 ## B. Preparation of Softwares and Website to be used. 
 
-### UniPro Gene for viewing and 01_Quality_Control of the sequences.
-1. Download UniPro UGENE from their [official websites](https://ugene.net/download-all.html). 
-2. Install the UniPro UGENE. 
-3. View the ab1 file in the UniPro UGENE software. 
+### MEGA Command Line Version for Phylogenetic_Analysis. 
+1. Download **megacc** (MEGA12 Command-line version) from their [official website](https://www.megasoftware.net/):
 
-### MEGA Command Line Version for 05_Phylogenetic_Analysis. 
-1. Download **megacc** (MEGA Command-line version) from their [official website](https://www.megasoftware.net/):
-
-   * Choose **Ubuntu/Debian**, **Command Line (CC)**, and version **MEGA 11**.
+   * Choose **Ubuntu/Debian**, **Command Line (CC)**, and version **MEGA 12**.
    * Place the downloaded `.deb` file in your working directory.
    * Install using:
 
