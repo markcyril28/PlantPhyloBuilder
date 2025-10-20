@@ -18,14 +18,6 @@ bash Miniconda3-latest-Linux-x86_64.sh
 source ~/.bashrc
 ````
 
-### 3. Creating a Conda Environment: Basic Cheatsheet
-
-```bash
-conda create -n PlantPhyloBuilder_ENV
-conda activate PlantPhyloBuilder_ENV
-conda deactivate
-```
-
 ---
 
 ## B. Preparation of Softwares and Website to be used. 
