@@ -14,6 +14,8 @@ sudo apt-get install -y \
 
 #sudo apt-get remove --purge mega
 
+: << 'MEGA_CC'
+
 # Path to MEGA-CC .deb
 DEB="1_CONFIG_FILES/mega-cc_12.0.14-1_amd64_beta.deb"
 
@@ -27,3 +29,5 @@ echo "✅ Installation complete. Run: megacc --version"
 megacc --version
 
 # Conda Install 
+
+MEGA_CC
