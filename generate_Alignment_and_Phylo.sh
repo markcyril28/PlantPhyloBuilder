@@ -4,7 +4,7 @@
 # ========================================
 # Phylogenetic Analysis Pipeline
 # ========================================
-# Performs phylogenetic analysis of GRF and GIF gene families:
+# Performs phylogenetic analysis.
 # 1. Discovers and merges FASTA files from query directories
 # 2. Performs multiple sequence alignment (MUSCLE, CLUSTAL, MAFFT, PROBCONS)
 # 3. Constructs phylogenetic trees using MEGACC/IQTREE2
