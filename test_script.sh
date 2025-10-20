@@ -2,9 +2,11 @@
 
 # Define an array of folder names
 folders=(
-
+  0_INPUT_RAW_FASTA_and_ALIGNMENT
+  1_CONFIG_FILES
+  2_OUTPUT_TREES
 )
-s
+
 # Create each folder if it does not exist
 for folder in ${folders[@]}; do
   mkdir -p "$folder"
