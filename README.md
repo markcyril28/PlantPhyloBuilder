@@ -41,16 +41,4 @@ conda deactivate
 sudo dpkg -i mega_11.0.13-1_amd64.deb
 ```
 
-### Clustal Omega for 04_Multiple_Sequence_Alignment.
-
-#### Command-line version 
-1. Open WSL. Activate your conda environment for your analysis.  
-2. Install Clustal Omega (clustalo) from conda using the script below while inside the conda environment.
-
-```bash
-conda install clustalo
-```
-#### Website version. 
-1. Go to their [website](https://www.ebi.ac.uk/jdispatcher/msa/clustalo). 
-2. Input your sequence. 
-3. Wait for the result. 
+### Download of Softwares/Dependencies for Multiple_Sequence_Alignment.
