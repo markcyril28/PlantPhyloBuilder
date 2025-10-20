@@ -21,7 +21,7 @@
    * Install using:
 
 ```bash
-sudo dpkg -i mega_11.0.13-1_amd64.deb
+sudo dpkg -i mega_<version>.deb
 ```
 
 ### Download of Softwares/Dependencies for Multiple_Sequence_Alignment.
