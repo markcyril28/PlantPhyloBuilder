@@ -39,7 +39,7 @@ readonly ALIGNMENT_METHODS=(
 
 # Phylogenetic software to use
 readonly PHYLO_SOFTWARE=(
-    #"MEGA_CC_12_Ubuntu"
+    "MEGA_CC_12_Ubuntu"
     "IQTREE2"
 )
 
@@ -48,7 +48,7 @@ readonly CONFIG_FILE=(
     "$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=16
+CPU=8           # Optimal Number of CPU cores to use    
 RUN_ALIGNMENT=TRUE
 RUN_PHYLO=TRUE
 
@@ -209,12 +209,7 @@ align_sequences() {
         log_info "Align $method: SKIPPED (exists)"
         return 0
     fi
-    if [[ "$input_file" == *GIF* ]]; then
-        local HMM_profile_aln_file="$GIF_SXXT_HMM_aln_FILE"
-    elif [[ "$input_file" == *GRF* ]]; then
-        local HMM_profile_aln_file="$GRF_QLQ_WRC_HMM_aln_FILE"
-    fi
-    
+
     log_step "Aligning $basename with $method"
     case "$method" in
         "MUSCLE") 
@@ -386,11 +381,11 @@ main() {
 
     for align_method in "${ALIGNMENT_METHODS[@]}"; do
         if [ "$RUN_PROTSEQ" = TRUE ] && [ "$RUN_NUCSEQ" = FALSE ]; then
-            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*GIF_ProtSeq*.fas)
+            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_ProtSeq*.fas)
         elif [ "$RUN_PROTSEQ" = FALSE ] && [ "$RUN_NUCSEQ" = TRUE ]; then
-            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*GIF_NucSeq*.fas)
+            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_NucSeq*.fas)
         elif [ "$RUN_PROTSEQ" = TRUE ] && [ "$RUN_NUCSEQ" = TRUE ]; then
-            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*GIF_ProtSeq*.fas "$query_dir/c_ALIGNMENT/${align_method}_aligned/"*GIF_NucSeq*.fas)
+            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_ProtSeq*.fas "$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_NucSeq*.fas)
         else
             log_warn "Skipping: RUN_NUCSEQ=FALSE and RUN_PROTSEQ=FALSE"
             continue
