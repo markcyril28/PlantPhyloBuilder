@@ -1,4 +1,4 @@
-# PlantPhyloBuilder (This markdown file is work in progress)
+# PlantPhyloBuilder (This markdown file is still in Work in Progress)
 
 ---
 
