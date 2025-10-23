@@ -13,7 +13,6 @@
 # ========================================
 
 # ---------------- INPUTS ----------------
-
 readonly INPUT_BASE_DIR="$PWD"
 readonly INPUT_DIR="0_INPUT_RAW_FASTA_and_ALIGNMENT"
 readonly CONFIG_DIR="1_CONFIG_FILES"
@@ -22,14 +21,16 @@ mkdir -p "$INPUT_DIR/b_RAW" "$CONFIG_DIR"
 
 INPUT_GROUP=(
     #"f_Curated"
-    "g_Renamed_FINAL"
+    #"64_genes_version"
+    "21_lifted_genes_version"
+    #"curated_21_genes_version"
 )
 
 # Alignment methods to use
 readonly ALIGNMENT_METHODS=(
     "CLUSTAL"
-    "MAFFT"
-    "PROBCONS"
+    #"MAFFT"
+    #"PROBCONS"
     #"MUSCLE"
     #"T_COFFEE_Default"
     #"T_COFFEE_Expresso"
@@ -45,11 +46,11 @@ readonly PHYLO_SOFTWARE=(
 
 readonly CONFIG_FILE=(
 	"$CONFIG_DIR/infer_ML_nucleotide.mao"
-    "$CONFIG_DIR/infer_ML_amino_acid.mao"
+    #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=8           # Optimal Number of CPU cores to use    
-RUN_ALIGNMENT=TRUE
+CPU=4           # Optimal Number of CPU cores to use    
+RUN_ALIGNMENT=FALSE
 RUN_PHYLO=TRUE
 
 
@@ -365,7 +366,7 @@ main() {
 
         if [ "$RUN_ALIGNMENT" = TRUE ]; then
             log_step "Step 2: Sequence Alignments for $group"
-            for b_RAW_file in "$query_dir/b_RAW/"*NucSeq*.fasta "$query_dir/b_RAW/"*ProtSeq*.fasta; do
+            for b_RAW_file in "$query_dir/b_RAW/"*.fasta; do
                 [[ ! -f "$b_RAW_file" ]] && continue
                 for align_method in "${ALIGNMENT_METHODS[@]}"; do
                     mkdir -p "$query_dir/c_ALIGNMENT/${align_method}_aligned"
@@ -380,28 +381,11 @@ main() {
     log_step "Step 3: Phylogenetic Trees for $group"
 
     for align_method in "${ALIGNMENT_METHODS[@]}"; do
-        if [ "$RUN_PROTSEQ" = TRUE ] && [ "$RUN_NUCSEQ" = FALSE ]; then
-            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_ProtSeq*.fas)
-        elif [ "$RUN_PROTSEQ" = FALSE ] && [ "$RUN_NUCSEQ" = TRUE ]; then
-            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_NucSeq*.fas)
-        elif [ "$RUN_PROTSEQ" = TRUE ] && [ "$RUN_NUCSEQ" = TRUE ]; then
-            aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_ProtSeq*.fas "$query_dir/c_ALIGNMENT/${align_method}_aligned/"*_NucSeq*.fas)
-        else
-            log_warn "Skipping: RUN_NUCSEQ=FALSE and RUN_PROTSEQ=FALSE"
-            continue
-        fi
+        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
-
-            # Select the right config file depending on sequence type
-            if [[ "$aligned_file" == *"ProtSeq"*".fas" ]]; then
-                config_file="$CONFIG_DIR/infer_ML_amino_acid.mao"
-            elif [[ "$aligned_file" == *"NucSeq"*".fas" ]]; then
-                config_file="$CONFIG_DIR/infer_ML_nucleotide.mao"
-            else
-                log_warn "Unknown sequence type: $aligned_file"
-                continue
-            fi
+            
+            config_file="$CONFIG_DIR/infer_ML_nucleotide.mao"
 
             for software in "${PHYLO_SOFTWARE[@]}"; do
 

@@ -9,7 +9,7 @@ sudo apt-get update && sudo apt-get install -f -y
 
 # Install alignment tools and required runtime dependencies
 sudo apt-get install -y \
-    muscle clustalw mafft t-coffee probcons \
+    muscle clustalw clustalo mafft t-coffee probcons \
     iqtree desktop-file-utils
 
 #sudo apt-get remove --purge mega
