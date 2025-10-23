@@ -20,7 +20,6 @@ readonly CONFIG_DIR="1_CONFIG_FILES"
 mkdir -p "$INPUT_DIR/b_RAW" "$CONFIG_DIR" 
 
 INPUT_GROUP=(
-    #"f_Curated"
     #"64_genes_version"
     "21_lifted_genes_version"
     #"curated_21_genes_version"
@@ -45,10 +44,9 @@ readonly CONFIG_FILE=(
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=4           # Optimal Number of CPU cores to use for Phylo is 8  
-RUN_ALIGNMENT=FALSE
+CPU=4                   # The Optimal Number of CPU cores to use for Phylo is 8  
+RUN_ALIGNMENT=TRUE
 RUN_PHYLO=TRUE
-
 
 # ---------------- OUTPUTS ----------------
 readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
@@ -328,9 +326,6 @@ generate_IQTREE2_tree() {
         return 1
     fi
 }
-
-
-# (Tree generation functions updated similarly: replace echo with log_info/log_error)
 
 # ========================================================================
 # MAIN
