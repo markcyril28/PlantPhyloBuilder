@@ -1,5 +1,11 @@
 # PlantPhyloBuilder 
 
+## How to clone this repository? 
+Run this command in the command line: 
+```
+git clone https://github.com/markcyril28/PlantPhyloBuilder.git
+```
+
 ---
 
 ## A. Preparation of the Environment and Dependencies.
@@ -7,7 +13,7 @@
 
 - Tutorial: [How to Install WSL](https://www.youtube.com/watch?v=5RTSlby-l9w)  
 ### **BIG NOTE:** Install **Ubuntu 22 or higher version** instead.
-- To check for the version of your Ubuntu, run this command: 
+- To check the version of your Ubuntu, run this command: 
 ```bash
 lsb_release -a
 ```
@@ -27,6 +33,20 @@ bash setup_script.sh
 
 ## C. Running Alignment and Phylogenetic Tree Analysis. 
 
+To run the alignment and create the phylogenetic tree, run the command below. 
+Choose the version you want to run. 
+
+For 64 genes version: 
 ```bash 
-bash generate_Alignment_and_Phylo.sh 
+bash generate_Alignment_and_Phylo_64_genes_version.sh 
+```
+
+For 21 lifted genes version: 
+```bash 
+bash generate_Alignment_and_Phylo_21_lifted_genes_version.sh 
+```
+
+For Curated 21 genes version: 
+```bash 
+bash generate_Alignment_and_Phylo_curated_21_genes_version.sh 
 ```
