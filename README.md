@@ -1,12 +1,12 @@
 # PlantPhyloBuilder 
 
 ## How to clone this repository? 
-Install git first: 
+Install git first by running this command: 
 ```bash 
 sudo apt install git -y
 ```
 
-Then, Run this command in the wsl/ubuntu command line to copy/clone the repository: 
+Then, run this command in the wsl/ubuntu command line to copy/clone the repository: 
 ```
 git clone https://github.com/markcyril28/PlantPhyloBuilder.git
 ```
