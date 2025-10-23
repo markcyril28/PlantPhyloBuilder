@@ -41,17 +41,17 @@ bash setup_script.sh
 To run the alignment and create the phylogenetic tree, run the command below. 
 Choose the version you want to run. 
 
-For 64 genes version: 
+**For 64 genes version:**
 ```bash 
 bash generate_Alignment_and_Phylo_64_genes_version.sh 
 ```
 
-For 21 lifted genes version: 
+**For 21 lifted genes version:**
 ```bash 
 bash generate_Alignment_and_Phylo_21_lifted_genes_version.sh 
 ```
 
-For Curated 21 genes version: 
+**For Curated 21 genes version:**
 ```bash 
 bash generate_Alignment_and_Phylo_curated_21_genes_version.sh 
 ```
