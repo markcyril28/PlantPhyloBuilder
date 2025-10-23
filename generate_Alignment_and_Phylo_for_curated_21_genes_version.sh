@@ -44,7 +44,7 @@ readonly CONFIG_FILE=(
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=8           # Optimal Number of CPU cores to use for Phylo is 8  
+CPU=4           # Optimal Number of CPU cores to use for Phylo is 8  
 RUN_ALIGNMENT=TRUE
 RUN_PHYLO=TRUE
 
@@ -209,12 +209,15 @@ align_sequences() {
     case "$method" in
         "MUSCLE") 
             muscle -in "$input_file" -out "$output_file" -maxiters 1000 -diags0 -threads $CPU ;;
-        
+
         "CLUSTAL") 
-            clustalo -i "$input_file" -o "$output_file" --outfmt=fasta \
-                --full --full-iter --iter=1000 \
-                --max-guidetree-iterations=1000 --max-hmm-iterations=1000 \
-                --threads $CPU ;;
+            clustalo -i "$input_file" -o "$output_file" --outfmt=fasta ;;
+        
+        #"CLUSTAL") 
+        #    clustalo -i "$input_file" -o "$output_file" --outfmt=fasta \
+        #        --full --full-iter --iter=1000 \
+        #        --max-guidetree-iterations=1000 --max-hmm-iterations=1000 \
+        #        --threads $CPU ;;
         
         "MAFFT") 
             mafft --thread $CPU --localpair --maxiterate 1000 "$input_file" > "$output_file" ;;
