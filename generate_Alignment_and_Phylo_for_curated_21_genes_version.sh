@@ -48,7 +48,6 @@ CPU=8           # Optimal Number of CPU cores to use for Phylo is 8
 RUN_ALIGNMENT=TRUE
 RUN_PHYLO=TRUE
 
-
 # ---------------- OUTPUTS ----------------
 readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
 
