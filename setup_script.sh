@@ -19,7 +19,7 @@ sudo apt-get install -y \
 DEB="1_CONFIG_FILES/mega-cc_12.0.14-1_amd64_beta.deb"
 
 # Inspect dependencies and install MEGA-CC
-echo "📦 Inspecting dependencies for $DEB..."
+echo "Inspecting dependencies for $DEB..."
 dpkg-deb -f "$DEB" Depends
 sudo dpkg -i "$DEB"
 
