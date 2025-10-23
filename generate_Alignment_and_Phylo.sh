@@ -45,7 +45,7 @@ readonly CONFIG_FILE=(
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=4           # Optimal Number of CPU cores to use    
+CPU=4           # Optimal Number of CPU cores to use for Phylo is 8  
 RUN_ALIGNMENT=FALSE
 RUN_PHYLO=TRUE
 
