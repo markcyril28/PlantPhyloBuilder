@@ -23,7 +23,7 @@ echo "Inspecting dependencies for $DEB..."
 dpkg-deb -f "$DEB" Depends
 sudo dpkg -i "$DEB"
 
-echo "✅ Installation complete. Run: megacc --version"
+echo "Installation complete. Run: megacc --version"
 
 megacc --version
 
