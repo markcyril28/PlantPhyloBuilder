@@ -32,10 +32,6 @@ readonly ALIGNMENT_METHODS=(
     #"MAFFT"
     #"PROBCONS"
     #"MUSCLE"
-    #"T_COFFEE_Default"
-    #"T_COFFEE_Expresso"
-    #"T_COFFEE_PsiCoffee"
-    #"T_COFFEE_Consensus"
 )
 
 # Phylogenetic software to use
@@ -226,23 +222,7 @@ align_sequences() {
             mafft --thread $CPU --localpair --maxiterate 1000 "$input_file" > "$output_file" ;;
         
         "PROBCONS") 
-            probcons -c 5 -ir 1000 -pre 20 "$input_file" > "$output_file" ;;
-        
-        "T_COFFEE_Expresso") 
-            t_coffee -seq "$input_file" -method expresso \
-                -output=fasta_aln -outfile "$output_file" -cpu=$CPU ;;
-
-        "T_COFFEE_PsiCoffee") 
-            t_coffee -seq "$input_file" -profile "$HMM_profile_aln_file" \
-                -outfile "$output_file" -output=fasta_aln \
-                -cpu=$CPU -iterate 1000 ;;
-        
-        "T_COFFEE_Consensus")
-            t_coffee -seq "$input_file" \
-                -output=fasta_aln \
-                -outfile "$output_file" \
-                -method mafft_msa,clustalw_msa,muscle_msa,probcons_msa \
-                -n_core=$CPU -mode accurate -quiet ;;
+            probcons -c 5 -ir 1000 -pre 20 "$input_file" > "$output_file" ;; 
         *) 
             log_error "Unknown alignment method: $method"; return 1 ;;
     esac
