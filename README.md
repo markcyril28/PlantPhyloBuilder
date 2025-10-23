@@ -16,6 +16,10 @@ lsb_release -a
 
 ## B. Preparation of Softwares and Website to be used. 
 
+Download megacc (MEGA12 Command-line version) from their official website:
+   Choose Ubuntu/Debian, Command Line (CC), and version MEGA 12.
+   Place the downloaded .deb file in ```1_CONFIG_FILES```.
+
 To download all softwares and dependencies needed, run this command. 
 ```bash 
 bash setup_script.sh
