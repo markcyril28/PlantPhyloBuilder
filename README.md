@@ -50,3 +50,9 @@ For Curated 21 genes version:
 ```bash 
 bash generate_Alignment_and_Phylo_curated_21_genes_version.sh 
 ```
+
+## D. After Running the Alignment and Phylogenetic Tree Generation 
+
+- Navigate to the ```2_PHYLOGENETIC_TREE_RESULTS```
+- Copy the output files accordingly to the Shared Google Drive: https://drive.google.com/drive/folders/1Ar0JSUZ1gd1uu7rrL5_Nq-E-tI0jTRci?usp=drive_link
+
