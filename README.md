@@ -17,7 +17,7 @@ git clone https://github.com/markcyril28/PlantPhyloBuilder.git
 ### 1. Activate your WSL
 
 - Tutorial: [How to Install WSL](https://www.youtube.com/watch?v=5RTSlby-l9w)  
-### **BIG NOTE:** Install **Ubuntu 22 or higher version** instead.
+### **Big Note:** MEGA12CC is only compatible with **Ubuntu 22 or higher version**. So, install **Ubuntu 22 or higher version** instead.
 - To check the version of your Ubuntu, run this command: 
 ```bash
 lsb_release -a
