@@ -18,7 +18,7 @@ Analysis                             = Phylogeny Reconstruction
 Statistical Method                   = Maximum Likelihood                  
 Phylogeny Test                       = ====================                
 Test of Phylogeny                    = Standard Bootstrap (slow)           
-Bootstrap Replicates                 = 20                                
+Bootstrap Replicates                 = 1000                                
 Substitution Model                   = ====================                
 Substitutions Type                   = Nucleotide                          
 Model/Method                         = Tamura-Nei model                    
@@ -32,6 +32,6 @@ ML Heuristic Method                  = Nearest-Neighbor-Interchange (NNI)
 Initial Tree for ML                  = Make initial tree automatically (Default - NJ/MP)
 Branch Swap Filter                   = None                                
 System Resource Usage                = ====================                
-Number of Threads                    = 4                                   
+Number of Threads                    = 8                                   
 Has Time Limit                       = False                               
 Maximum Execution Time               = -1                                  

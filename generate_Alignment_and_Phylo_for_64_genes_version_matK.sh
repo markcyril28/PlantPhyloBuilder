@@ -369,7 +369,7 @@ main() {
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
 
-            if [[ ! -s "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
+            if [[ "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
                 config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
             else
                 config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"

@@ -6,7 +6,7 @@ Install git first by running this command:
 sudo apt install git -y
 ```
 
-If First Time, run this command in your desired directory in the wsl/ubuntu command line to copy/clone the repository: 
+If First Time, run this command in your desired directory in the WSL/ubuntu command line to copy/clone the repository: 
 ```
 git clone https://github.com/markcyril28/PlantPhyloBuilder.git
 ```
@@ -70,7 +70,7 @@ bash generate_Alignment_and_Phylo_curated_21_genes_version.sh
 - Navigate to the ```2_PHYLOGENETIC_TREE_RESULTS```
 - Copy the output files accordingly to the Shared Google Drive: https://drive.google.com/drive/folders/1Ar0JSUZ1gd1uu7rrL5_Nq-E-tI0jTRci?usp=drive_link
 
-## E. Final Run (64 genes version)
+## E. Final Run (64 genes version and updated 18s)
 
 **For 18s:**
 ```bash 
