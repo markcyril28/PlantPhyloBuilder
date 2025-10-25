@@ -6,7 +6,7 @@ Install git first by running this command:
 sudo apt install git -y
 ```
 
-If First Time, run this command in your desired directory in the WSL/ubuntu command line to copy/clone the repository: 
+If First Time, run this command in your desired directory in the WSL/Ubuntu command line to copy/clone the repository: 
 ```
 git clone https://github.com/markcyril28/PlantPhyloBuilder.git
 ```
