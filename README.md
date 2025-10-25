@@ -70,7 +70,7 @@ bash generate_Alignment_and_Phylo_curated_21_genes_version.sh
 - Navigate to the ```2_PHYLOGENETIC_TREE_RESULTS```
 - Copy the output files accordingly to the Shared Google Drive: https://drive.google.com/drive/folders/1Ar0JSUZ1gd1uu7rrL5_Nq-E-tI0jTRci?usp=drive_link
 
-## E. Final Run (64 genes version and updated 18s)
+## E. Final Run (64 genes version: For Updated 18s and concatenated sequence)
 
 **For 18s:**
 ```bash 
