@@ -40,11 +40,12 @@ readonly PHYLO_SOFTWARE=(
 )
 
 readonly CONFIG_FILE=(
-	"$CONFIG_DIR/infer_ML_nucleotide.mao"
+	"$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+    "$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=8                   # The Optimal Number of CPU cores to use for Phylo is 8  
+CPU=4                  # The Optimal Number of CPU cores to use for Phylo is 8  
 RUN_ALIGNMENT=TRUE
 RUN_PHYLO=TRUE
 
@@ -360,12 +361,14 @@ main() {
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
             
-            config_file="$CONFIG_DIR/infer_ML_nucleotide.mao"
+            if [[ ! -s "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
+                config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+            else
+                config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
+            fi
 
             for software in "${PHYLO_SOFTWARE[@]}"; do
-
                 case "$software" in
-
                     "MEGA_CC_12_Ubuntu")
                         log_step "$software"
                         generate_MEGA_CC_12_Ubuntu_tree "$aligned_file" "$align_method" "$config_file" "$output_subdir"

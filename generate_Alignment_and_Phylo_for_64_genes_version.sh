@@ -20,8 +20,8 @@ readonly CONFIG_DIR="1_CONFIG_FILES"
 mkdir -p "$INPUT_DIR/b_RAW" "$CONFIG_DIR" 
 
 INPUT_GROUP=(
-    #"64_genes_version"
-    "21_lifted_genes_version"
+    "64_genes_version"
+    #"21_lifted_genes_version"
     #"curated_21_genes_version"
 )
 
@@ -40,7 +40,8 @@ readonly PHYLO_SOFTWARE=(
 )
 
 readonly CONFIG_FILE=(
-	"$CONFIG_DIR/infer_ML_nucleotide.mao"
+	"$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+    "$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
@@ -212,10 +213,13 @@ align_sequences() {
             muscle -in "$input_file" -out "$output_file" -maxiters 1000 -diags0 -threads $CPU ;;
         
         "CLUSTAL") 
-            clustalo -i "$input_file" -o "$output_file" --outfmt=fasta \
-                --full --full-iter --iter=1000 \
-                --max-guidetree-iterations=1000 --max-hmm-iterations=1000 \
-                --threads $CPU ;;
+            clustalo -i "$input_file" -o "$output_file" --outfmt=fasta ;;
+
+        #"CLUSTAL") 
+        #    clustalo -i "$input_file" -o "$output_file" --outfmt=fasta \
+        #        --full --full-iter --iter=10 \
+        #        --max-guidetree-iterations=10 --max-hmm-iterations=10 \
+        #        --threads $CPU ;;
         
         "MAFFT") 
             mafft --thread $CPU --localpair --maxiterate 1000 "$input_file" > "$output_file" ;;
@@ -363,8 +367,13 @@ main() {
         aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
-            
-            config_file="$CONFIG_DIR/infer_ML_nucleotide.mao"
+
+            if [[ ! -s "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
+                config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+            else
+                config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
+            fi
+                
 
             for software in "${PHYLO_SOFTWARE[@]}"; do
 

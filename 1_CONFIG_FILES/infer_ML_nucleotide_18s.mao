@@ -31,6 +31,6 @@ ML Heuristic Method                  = Nearest-Neighbor-Interchange (NNI)
 Initial Tree for ML                  = Make initial tree automatically (Default - NJ/MP)
 Branch Swap Filter                   = None                                
 System Resource Usage                = ====================                
-Number of Threads                    = 4                                   
+Number of Threads                    = 8                                   
 Has Time Limit                       = False                               
 Maximum Execution Time               = -1                                  
