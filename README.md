@@ -6,7 +6,16 @@ Install git first by running this command:
 sudo apt install git -y
 ```
 
-Then, run this command in your desired directory in the wsl/ubuntu command line to copy/clone the repository: 
+If First Time, run this command in your desired directory in the wsl/ubuntu command line to copy/clone the repository: 
+```
+git clone https://github.com/markcyril28/PlantPhyloBuilder.git
+```
+
+If Second Time, run this in the directory of the PlantPhyloBuilder
+```
+git pull
+```
+or clone the repo in another directory:
 ```
 git clone https://github.com/markcyril28/PlantPhyloBuilder.git
 ```
@@ -68,12 +77,12 @@ bash generate_Alignment_and_Phylo_curated_21_genes_version.sh
 bash generate_Alignment_and_Phylo_64_genes_version_18s.sh 
 ```
 
-**For concatenated:**
-```bash 
-bash generate_Alignment_and_Phylo_64_genes_version_concatenated.sh 
-```
-
 **For matK:**
 ```bash 
 bash generate_Alignment_and_Phylo_64_genes_version_matk.sh 
+```
+
+**For concatenated:**
+```bash 
+bash generate_Alignment_and_Phylo_64_genes_version_concatenated.sh 
 ```
