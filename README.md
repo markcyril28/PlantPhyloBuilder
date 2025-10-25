@@ -72,6 +72,8 @@ bash generate_Alignment_and_Phylo_curated_21_genes_version.sh
 
 ## E. Final Run (64 genes version: For Updated 18s and concatenated sequence)
 
+Run the command below in the WSL/Ubuntu terminal of the working directory where this repo is clone/copied. Copy the command (Click copy) for ease of run. 
+
 **For 18s:**
 ```bash 
 bash generate_Alignment_and_Phylo_64_genes_version_18s.sh 
