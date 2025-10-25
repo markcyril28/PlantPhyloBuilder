@@ -364,7 +364,8 @@ main() {
     log_step "Step 3: Phylogenetic Trees for $group"
 
     for align_method in "${ALIGNMENT_METHODS[@]}"; do
-        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
+        #aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
+        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/matk_sequences.fas")
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
 

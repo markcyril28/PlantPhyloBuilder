@@ -364,16 +364,16 @@ main() {
     log_step "Step 3: Phylogenetic Trees for $group"
 
     for align_method in "${ALIGNMENT_METHODS[@]}"; do
-        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
+        #aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
+        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/rna_sequences.fas")
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
 
-            if [[ ! -s "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
+            if [[ "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
                 config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
             else
                 config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
             fi
-                
 
             for software in "${PHYLO_SOFTWARE[@]}"; do
 
