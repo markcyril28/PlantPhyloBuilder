@@ -45,7 +45,7 @@ To download all softwares and dependencies needed, run this command.
 bash setup_script.sh
 ```
 
-## C. Running Alignment and Phylogenetic Tree Analysis (Already Pass This. Ignore this.)  
+## C. Running Alignment and Phylogenetic Tree Analysis (Already Passed This. Ignore this.)  
 
 To run the alignment and create the phylogenetic tree, run the command below. 
 Choose the version you want to run. 
