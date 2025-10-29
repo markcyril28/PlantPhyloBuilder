@@ -17,14 +17,17 @@ readonly INPUT_BASE_DIR="$PWD"
 readonly INPUT_DIR="0_INPUT_RAW_FASTA_and_ALIGNMENT"
 readonly CONFIG_DIR="1_CONFIG_FILES"
 
-mkdir -p "$INPUT_DIR/b_RAW" "$CONFIG_DIR" 
+mkdir -p "$INPUT_DIR" "$CONFIG_DIR" 
 
-INPUT_GROUP=(
+INPUT_GROUP_SCRIPT=(
     #"64_genes_version"
-    "21_lifted_genes_version"
+    #"21_lifted_genes_version"
     "curated_21_genes_version"
-    "curated_64_genes_version"
+    #"curated_64_genes_version"
 )
+
+# Accept from CLI or auto-discover later if empty
+#INPUT_GROUP=()
 
 # Alignment methods to use
 readonly ALIGNMENT_METHODS=(
@@ -60,7 +63,7 @@ readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
 LOG_DIR="${LOG_DIR:-logs}"
 LOG_FILE="${LOG_FILE:-$LOG_DIR/phylo_pipeline_${RUN_ID}_full_log.log}"
-rm -rf "$LOG_DIR"/*.log
+#rm -rf "$LOG_DIR"/*.log
 
 timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 log() { local level="$1"; shift; printf '[%s] [%s] %s\n' "$(timestamp)" "$level" "$*"; }
@@ -95,6 +98,45 @@ run_with_time_to_log() {
 # ========================================================================
 # FUNCTIONS
 # ========================================================================
+
+print_usage() {
+    cat <<EOF
+Usage: $(basename "$0") [options]
+
+Options:
+  -g, --group NAME         Add a single input group (can be repeated)
+  -G, --groups LIST        Comma-separated list of groups
+  -h, --help               Show this help
+
+Examples:
+  $(basename "$0") --group curated_21_genes_version
+  $(basename "$0") --groups curated_21_genes_version,curated_64_genes_version
+EOF
+}
+
+parse_args() {
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            -g|--group)
+                [[ -n "${2:-}" ]] || { echo "Missing value for $1"; exit 2; }
+                INPUT_GROUP+=("$2"); shift 2 ;;
+            -G|--groups)
+                [[ -n "${2:-}" ]] || { echo "Missing value for $1"; exit 2; }
+                IFS=',' read -r -a __groups <<< "$2"
+                for g in "${__groups[@]}"; do
+                    [[ -n "$g" ]] && INPUT_GROUP+=("$g")
+                done
+                shift 2 ;;
+            -h|--help)
+                print_usage; exit 0 ;;
+            --)
+                shift; break ;;
+            *)
+                echo "Unknown argument: $1"
+                print_usage; exit 2 ;;
+        esac
+    done
+}
 
 validate_fasta_sequences() {
     local file=$1
@@ -348,7 +390,21 @@ generate_IQTREE2_tree() {
 # ========================================================================
 main() {
     setup_logging
+    parse_args "$@"
+
+    # Use the INPUT_GROUP_SCRIPT if none were provided: choose subfolders in INPUT_DIR that contain a b_RAW directory
+    if [[ ${#INPUT_GROUP[@]} -eq 0 ]]; then
+        INPUT_GROUP=$INPUT_GROUP_SCRIPT
+    fi
+
+    if [[ ${#INPUT_GROUP[@]} -eq 0 ]]; then
+        log_error "No input groups provided and none found in '$INPUT_DIR'."
+        log_info "Use --group NAME or --groups a,b,c"
+        exit 1
+    fi
+
     log_step "Starting Phylogenetic Analysis Pipeline"
+    log_info "Input groups: ${INPUT_GROUP[*]}"
 
     for group in "${INPUT_GROUP[@]}"; do
         local query_dir="$INPUT_DIR/$group"
@@ -383,7 +439,6 @@ main() {
                 config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
             fi
                 
-
             for software in "${PHYLO_SOFTWARE[@]}"; do
 
                 case "$software" in
