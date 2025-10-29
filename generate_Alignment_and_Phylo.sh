@@ -27,7 +27,8 @@ INPUT_GROUP=(
 
 # Alignment methods to use
 readonly ALIGNMENT_METHODS=(
-    "CLUSTAL"
+    #"CLUSTALO"
+    "CLUSTALW"
     #"MAFFT"
     #"PROBCONS"
     #"MUSCLE"
@@ -40,13 +41,15 @@ readonly PHYLO_SOFTWARE=(
 )
 
 readonly CONFIG_FILE=(
-	"$CONFIG_DIR/infer_ML_nucleotide.mao"
+	"$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+    "$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=4           # Optimal Number of CPU cores to use for Phylo is 8  
+CPU=4               # Optimal Number of CPU cores to use for Phylo is 8  
 RUN_ALIGNMENT=TRUE
-RUN_PHYLO=TRUE
+RUN_PHYLO=FALSE
+
 
 # ---------------- OUTPUTS ----------------
 readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
@@ -57,7 +60,7 @@ readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
 RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
 LOG_DIR="${LOG_DIR:-logs}"
 LOG_FILE="${LOG_FILE:-$LOG_DIR/phylo_pipeline_${RUN_ID}_full_log.log}"
-rm -rf "logs.log"
+rm -rf "$LOG_DIR"/*.log
 
 timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
 log() { local level="$1"; shift; printf '[%s] [%s] %s\n' "$(timestamp)" "$level" "$*"; }
@@ -82,7 +85,11 @@ trap 'log_error "Command failed (rc=$?) at line $LINENO: ${BASH_COMMAND:-unknown
 trap 'log_info "Finished"' EXIT
 
 run_with_time_to_log() {
-	/usr/bin/time -v "$@" >> "$LOG_FILE" 2>&1
+    if [[ $# -eq 0 ]]; then
+        log_error "run_with_time_to_log called with no command"
+        return 1
+    fi
+    /usr/bin/time -v "$@" >> "$LOG_FILE" 2>&1
 }
 
 # ========================================================================
@@ -209,14 +216,19 @@ align_sequences() {
     case "$method" in
         "MUSCLE") 
             muscle -in "$input_file" -out "$output_file" -maxiters 1000 -diags0 -threads $CPU ;;
-
-        "CLUSTAL") 
-            clustalo -i "$input_file" -o "$output_file" --outfmt=fasta ;;
         
+        "CLUSTALO")
+            run_with_time_to_log \
+                clustalo -i "$input_file" -o "$output_file" --outfmt=fasta ;;
+
+        "CLUSTALW")
+            run_with_time_to_log \
+                clustalw -INFILE="$input_file" -OUTFILE="$output_file" -OUTPUT=FASTA ;;
+
         #"CLUSTAL") 
         #    clustalo -i "$input_file" -o "$output_file" --outfmt=fasta \
-        #        --full --full-iter --iter=1000 \
-        #        --max-guidetree-iterations=1000 --max-hmm-iterations=1000 \
+        #        --full --full-iter --iter=10 \
+        #        --max-guidetree-iterations=10 --max-hmm-iterations=10 \
         #        --threads $CPU ;;
         
         "MAFFT") 
@@ -265,12 +277,13 @@ generate_MEGA_CC_12_Ubuntu_tree() {
     log_info "Generating MEGA tree for $(basename "$aligned_file") | Aligned with $method | Config: $(basename "$config_file")"
 
     # Run MEGA with timing and log output
-    megacc \
-        -d "$aligned_file" \
-        -a "$config_file" \
-        -o "$output_file" \
-        --cpu $CPU \
-        > "$mega_log" 2>&1
+    run_with_time_to_log \
+        megacc \
+            -d "$aligned_file" \
+            -a "$config_file" \
+            -o "$output_file" \
+            --cpu $CPU \
+            > "$mega_log" 2>&1
 
     if [[ -s "$output_file" ]]; then
         log_info "✅ Tree: $output_file"
@@ -279,7 +292,6 @@ generate_MEGA_CC_12_Ubuntu_tree() {
         return 1
     fi
 }
-
 
 generate_IQTREE2_tree() {
     local aligned_file=$1
@@ -314,13 +326,14 @@ generate_IQTREE2_tree() {
     log_step "IQ-TREE2: $basename | $method"
 
     # Run IQ-TREE2 with timing and bootstrap support
-    iqtree \
-        -s "$aligned_file" \
-        -nt AUTO \
-        -bb 2000 \
-        -alrt 1000 \
-        -pre "$output_prefix" \
-        > "$log_file" 2>&1
+    run_with_time_to_log \
+        iqtree \
+            -s "$aligned_file" \
+            -nt AUTO \
+            -bb 2000 \
+            -alrt 1000 \
+            -pre "$output_prefix" \
+            > "$log_file" 2>&1
 
     if [[ -s "$tree_file" ]]; then
         log_info "✅ Tree: $tree_file"
@@ -329,7 +342,6 @@ generate_IQTREE2_tree() {
         return 1
     fi
 }
-
 
 # (Tree generation functions updated similarly: replace echo with log_info/log_error)
 
@@ -362,11 +374,17 @@ main() {
     log_step "Step 3: Phylogenetic Trees for $group"
 
     for align_method in "${ALIGNMENT_METHODS[@]}"; do
-        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
+        #aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
+        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/concatenated_sequences.fas")
         for aligned_file in "${aligned_files[@]}"; do
             [[ ! -f "$aligned_file" ]] && continue
-            
-            config_file="$CONFIG_DIR/infer_ML_nucleotide.mao"
+
+            if [[ "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
+                config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+            else
+                config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
+            fi
+                
 
             for software in "${PHYLO_SOFTWARE[@]}"; do
 
