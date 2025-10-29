@@ -21,8 +21,9 @@ mkdir -p "$INPUT_DIR/b_RAW" "$CONFIG_DIR"
 
 INPUT_GROUP=(
     #"64_genes_version"
-    #"21_lifted_genes_version"
+    "21_lifted_genes_version"
     "curated_21_genes_version"
+    "curated_64_genes_version"
 )
 
 # Alignment methods to use
@@ -37,7 +38,7 @@ readonly ALIGNMENT_METHODS=(
 # Phylogenetic software to use
 readonly PHYLO_SOFTWARE=(
     "MEGA_CC_12_Ubuntu"
-    #"IQTREE2"
+    "IQTREE2"
 )
 
 readonly CONFIG_FILE=(
@@ -49,7 +50,6 @@ readonly CONFIG_FILE=(
 CPU=4               # Optimal Number of CPU cores to use for Phylo is 8  
 RUN_ALIGNMENT=TRUE
 RUN_PHYLO=FALSE
-
 
 # ---------------- OUTPUTS ----------------
 readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
@@ -342,8 +342,6 @@ generate_IQTREE2_tree() {
         return 1
     fi
 }
-
-# (Tree generation functions updated similarly: replace echo with log_info/log_error)
 
 # ========================================================================
 # MAIN
