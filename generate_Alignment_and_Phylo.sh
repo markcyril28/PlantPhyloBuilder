@@ -51,8 +51,8 @@ readonly CONFIG_FILE=(
 )
 
 CPU=4               # Optimal Number of CPU cores to use for Phylo is 8  
-RUN_ALIGNMENT=TRUE
-RUN_PHYLO=FALSE
+#RUN_ALIGNMENT=TRUE
+#RUN_PHYLO=FALSE
 
 # ---------------- OUTPUTS ----------------
 readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
@@ -127,6 +127,30 @@ parse_args() {
                     [[ -n "$g" ]] && INPUT_GROUP+=("$g")
                 done
                 shift 2 ;;
+            --run-alignment)
+                RUN_ALIGNMENT=TRUE; shift ;;
+            --skip-alignment)
+                RUN_ALIGNMENT=FALSE; shift ;;
+            --alignment)
+                [[ -n "${2:-}" ]] || { echo "Missing value for $1 (true/false)"; exit 2; }
+                case "${2,,}" in
+                    TRUE|true|1|yes|on) RUN_ALIGNMENT=TRUE ;;
+                    FALSE|false|0|no|off) RUN_ALIGNMENT=FALSE ;;
+                    *) echo "Invalid value for --alignment: $2 (use true/false)"; exit 2 ;;
+                esac
+                shift 2 ;;
+            --run-phylo)
+                RUN_PHYLO=TRUE; shift ;;
+            --skip-phylo)
+                RUN_PHYLO=FALSE; shift ;;
+            --phylo)
+                [[ -n "${2:-}" ]] || { echo "Missing value for $1 (true/false)"; exit 2; }
+                case "${2,,}" in
+                    TRUE|true|1|yes|on) RUN_PHYLO=TRUE ;;
+                    FALSE|false|0|no|off) RUN_PHYLO=FALSE ;;
+                    *) echo "Invalid value for --phylo: $2 (use true/false)"; exit 2 ;;
+                esac
+                shift 2 ;;
             -h|--help)
                 print_usage; exit 0 ;;
             --)
@@ -136,6 +160,27 @@ parse_args() {
                 print_usage; exit 2 ;;
         esac
     done
+}
+
+format_fasta_fold_60() {
+    # Format a FASTA sequence in standard 60-character lines
+    local input_file=$1
+    [[ ! -f "$input_file" ]] && { log_error "File not found: $input_file"; return 1; }
+    
+    local temp_file="${input_file}.fmt_tmp"
+    > "$temp_file"
+    
+    while IFS= read -r line; do
+        if [[ "$line" =~ ^">" ]]; then
+            [[ -s "$temp_file" ]] && echo "" >> "$temp_file"
+            echo "$line" >> "$temp_file"
+        else
+            echo "$line" | fold -w 60 >> "$temp_file"
+        fi
+    done < "$input_file"
+    
+    mv "$temp_file" "$input_file"
+    log_info "Formatted: $input_file"
 }
 
 validate_fasta_sequences() {
@@ -415,6 +460,7 @@ main() {
             log_step "Step 2: Sequence Alignments for $group"
             for b_RAW_file in "$query_dir/b_RAW/"*.fasta; do
                 [[ ! -f "$b_RAW_file" ]] && continue
+                format_fasta_fold_60 "$b_RAW_file"
                 for align_method in "${ALIGNMENT_METHODS[@]}"; do
                     mkdir -p "$query_dir/c_ALIGNMENT/${align_method}_aligned"
                     align_sequences "$b_RAW_file" "$align_method" "$query_dir/c_ALIGNMENT/${align_method}_aligned"
