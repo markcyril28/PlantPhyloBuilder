@@ -54,19 +54,19 @@ bash setup_script.sh
 To run the alignment and create the phylogenetic tree, run the command below. 
 Choose the version you want to run. 
 
-**For Curated 64 genes version:**
+**For Final matk:**
 ```bash 
-bash run_curated_64_genes_version.sh 
+bash run_final_matk.sh 
 ```
 
-**For Curated 21 genes version:**
+**For Final 18s rRNA:**
 ```bash 
-bash run_curated_21_genes_version.sh 
+bash run_final_18s.sh 
 ```
 
-**For 21 lifted genes version:**
+**For Final Concatenated:**
 ```bash 
-bash run_21_lifted_genes_version.sh 
+bash run_final_Concatenated.sh 
 ```
 
 ## D. After Running the Alignment and Phylogenetic Tree Generation 

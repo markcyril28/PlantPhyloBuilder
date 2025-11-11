@@ -10,7 +10,14 @@
 # 3. Constructs phylogenetic trees using MEGACC/IQTREE2
 #
 # Dependencies: MUSCLE, ClustalW, MAFFT, PROBCONS, MEGACC, IQ-TREE2
+#
+# Logging: All alignment and phylogenetic tree generation commands use 
+# run_with_space_time_log for comprehensive time/space metrics tracking.
 # ========================================
+
+# Source logging utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/1_CONFIG_FILES/space_time.sh"
 
 # ---------------- INPUTS ----------------
 readonly INPUT_BASE_DIR="$PWD"
@@ -19,12 +26,15 @@ readonly CONFIG_DIR="1_CONFIG_FILES"
 
 mkdir -p "$INPUT_DIR" "$CONFIG_DIR" 
 
-INPUT_GROUP_SCRIPT=(
+INPUT_GROUP=(
     #"64_genes_version"
     #"21_lifted_genes_version"
-    "curated_21_genes_version"
+    #"curated_21_genes_version"
     #"curated_64_genes_version"
 )
+
+# Accept from CLI; if none provided, we'll use the list above.
+# If that list is empty, we'll auto-discover later.
 
 # Accept from CLI or auto-discover later if empty
 #INPUT_GROUP=()
@@ -50,50 +60,16 @@ readonly CONFIG_FILE=(
     #"$CONFIG_DIR/infer_ML_amino_acid.mao"
 )
 
-CPU=4               # Optimal Number of CPU cores to use for Phylo is 8  
-#RUN_ALIGNMENT=TRUE
-#RUN_PHYLO=FALSE
+CPU=8               # Optimal Number of CPU cores to use for Phylo is 8  
+RUN_ALIGNMENT=${RUN_ALIGNMENT:-FALSE}
+RUN_PHYLO=${RUN_PHYLO:-FALSE}
+
+# Sequence types to process (matk, rna, concat)
+# Empty means all sequences; specify to filter
+SEQUENCE_TYPES=()
 
 # ---------------- OUTPUTS ----------------
 readonly OUTPUT_DIR="2_PHYLOGENETIC_TREE_RESULTS"
-
-# ========================================================================
-# LOGGING
-# ========================================================================
-RUN_ID="${RUN_ID:-$(date +%Y%m%d_%H%M%S)}"
-LOG_DIR="${LOG_DIR:-logs}"
-LOG_FILE="${LOG_FILE:-$LOG_DIR/phylo_pipeline_${RUN_ID}_full_log.log}"
-#rm -rf "$LOG_DIR"/*.log
-
-timestamp() { date '+%Y-%m-%d %H:%M:%S'; }
-log() { local level="$1"; shift; printf '[%s] [%s] %s\n' "$(timestamp)" "$level" "$*"; }
-log_info() { log INFO "$@"; }
-log_warn() { log WARN "$@"; }
-log_error() { log ERROR "$@"; }
-log_step() { log INFO "============================== $* =============================="; }
-
-setup_logging() {
-	mkdir -p "$LOG_DIR"
-    
-	log_choice="${log_choice:-1}"
-	if [[ "$log_choice" == "2" ]]; then
-		exec >"$LOG_FILE" 2>&1
-	else
-		exec > >(tee -a "$LOG_FILE") 2>&1
-	fi
-	log_info "Log: $LOG_FILE"
-}
-
-trap 'log_error "Command failed (rc=$?) at line $LINENO: ${BASH_COMMAND:-unknown}"; exit 1' ERR
-trap 'log_info "Finished"' EXIT
-
-run_with_time_to_log() {
-    if [[ $# -eq 0 ]]; then
-        log_error "run_with_time_to_log called with no command"
-        return 1
-    fi
-    /usr/bin/time -v "$@" >> "$LOG_FILE" 2>&1
-}
 
 # ========================================================================
 # FUNCTIONS
@@ -106,23 +82,48 @@ Usage: $(basename "$0") [options]
 Options:
   -g, --group NAME         Add a single input group (can be repeated)
   -G, --groups LIST        Comma-separated list of groups
+  --alignment TRUE|FALSE   Enable/disable alignment step
+  --phylo TRUE|FALSE       Enable/disable phylogenetic tree generation
+  --seq-type TYPE          Add sequence type to process (matk, rna, concat)
+  --matk                   Process only matK sequences
+  --rna                    Process only rRNA/18S sequences
+  --concat                 Process only concatenated sequences
   -h, --help               Show this help
+
+Notes:
+  If no groups are provided, the script uses the INPUT_GROUP list defined near the top of the file.
+  If that list is empty, it auto-discovers groups under '$INPUT_DIR' that contain a 'b_RAW' directory.
+  If no sequence types are specified, all available sequences are processed.
 
 Examples:
   $(basename "$0") --group curated_21_genes_version
   $(basename "$0") --groups curated_21_genes_version,curated_64_genes_version
+  $(basename "$0") --group 21_lifted_genes_version --matk --phylo TRUE
+  $(basename "$0") --group 21_lifted_genes_version --rna --alignment TRUE
+  $(basename "$0") --group 21_lifted_genes_version --concat --phylo TRUE
 EOF
 }
 
 parse_args() {
+    local cli_specified=false
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -g|--group)
                 [[ -n "${2:-}" ]] || { echo "Missing value for $1"; exit 2; }
+                if [[ "$cli_specified" == false ]]; then
+                    # First CLI group provided: override defaults
+                    INPUT_GROUP=()
+                    cli_specified=true
+                fi
                 INPUT_GROUP+=("$2"); shift 2 ;;
             -G|--groups)
                 [[ -n "${2:-}" ]] || { echo "Missing value for $1"; exit 2; }
                 IFS=',' read -r -a __groups <<< "$2"
+                if [[ "$cli_specified" == false ]]; then
+                    # First CLI groups provided: override defaults
+                    INPUT_GROUP=()
+                    cli_specified=true
+                fi
                 for g in "${__groups[@]}"; do
                     [[ -n "$g" ]] && INPUT_GROUP+=("$g")
                 done
@@ -151,6 +152,23 @@ parse_args() {
                     *) echo "Invalid value for --phylo: $2 (use true/false)"; exit 2 ;;
                 esac
                 shift 2 ;;
+            --seq-type)
+                [[ -n "${2:-}" ]] || { echo "Missing value for $1"; exit 2; }
+                case "${2,,}" in
+                    matk|rna|concat|concatenated)
+                        local seq_type="${2,,}"
+                        [[ "$seq_type" == "concatenated" ]] && seq_type="concat"
+                        SEQUENCE_TYPES+=("$seq_type")
+                        ;;
+                    *) echo "Invalid sequence type: $2 (use matk, rna, or concat)"; exit 2 ;;
+                esac
+                shift 2 ;;
+            --matk)
+                SEQUENCE_TYPES+=("matk"); shift ;;
+            --rna)
+                SEQUENCE_TYPES+=("rna"); shift ;;
+            --concat|--concatenated)
+                SEQUENCE_TYPES+=("concat"); shift ;;
             -h|--help)
                 print_usage; exit 0 ;;
             --)
@@ -168,7 +186,7 @@ format_fasta_fold_60() {
     [[ ! -f "$input_file" ]] && { log_error "File not found: $input_file"; return 1; }
     
     local temp_file="${input_file}.fmt_tmp"
-    > "$temp_file"
+    : > "$temp_file"
     
     while IFS= read -r line; do
         if [[ "$line" =~ ^">" ]]; then
@@ -227,7 +245,7 @@ clean_merged_fasta() {
     local current_sequence=""
     local entries_removed=0
     
-    > "$temp_file"
+    : > "$temp_file"
     while IFS= read -r line; do
         if [[ "$line" =~ ^">" ]]; then
             if [[ -n "$current_header" ]]; then
@@ -270,7 +288,7 @@ merge_fasta_by_gene() {
     fi
     log_step "Merging $gene_type"
     
-    > "$output_file"
+    : > "$output_file"
     local count=0
     while IFS= read -r -d '' file; do
         local filename=$(basename "$file")
@@ -286,6 +304,11 @@ merge_fasta_by_gene() {
     
     log_info "Merged $count files"
     [[ -s "$output_file" ]] && clean_merged_fasta "$output_file"
+    
+    # Log space metrics for merge operation
+    if [[ -s "$output_file" ]]; then
+        log_file_size "$output_file" "Merged ${gene_type} sequences"
+    fi
 }
 
 align_sequences() {
@@ -302,32 +325,70 @@ align_sequences() {
     log_step "Aligning $basename with $method"
     case "$method" in
         "MUSCLE") 
-            muscle -in "$input_file" -out "$output_file" -maxiters 1000 -diags0 -threads $CPU ;;
+            run_with_space_time_log \
+                --input "$input_file" \
+                --output "$output_file" \
+                muscle -in "$input_file" -out "$output_file" -maxiters 1000 -diags0 -threads $CPU ;;
         
         "CLUSTALO")
-            run_with_time_to_log \
+            run_with_space_time_log \
+                --input "$input_file" \
+                --output "$output_file" \
                 clustalo -i "$input_file" -o "$output_file" --outfmt=fasta ;;
 
         "CLUSTALW")
-            run_with_time_to_log \
+            run_with_space_time_log \
+                --input "$input_file" \
+                --output "$output_file" \
                 clustalw -INFILE="$input_file" -OUTFILE="$output_file" -OUTPUT=FASTA ;;
-
-        #"CLUSTAL") 
-        #    clustalo -i "$input_file" -o "$output_file" --outfmt=fasta \
-        #        --full --full-iter --iter=10 \
-        #        --max-guidetree-iterations=10 --max-hmm-iterations=10 \
-        #        --threads $CPU ;;
         
         "MAFFT") 
-            mafft --thread $CPU --localpair --maxiterate 1000 "$input_file" > "$output_file" ;;
+            run_with_space_time_log \
+                --input "$input_file" \
+                --output "$output_file" \
+                bash -c "mafft --thread $CPU --localpair --maxiterate 1000 '$input_file' > '$output_file'" ;;
         
         "PROBCONS") 
-            probcons -c 5 -ir 1000 -pre 20 "$input_file" > "$output_file" ;; 
+            run_with_space_time_log \
+                --input "$input_file" \
+                --output "$output_file" \
+                bash -c "probcons -c 5 -ir 1000 -pre 20 '$input_file' > '$output_file'" ;; 
         *) 
             log_error "Unknown alignment method: $method"; return 1 ;;
     esac
 
     log_info "Output alignment: $output_file"
+    
+    # Log space metrics for alignment
+    if [[ -s "$output_file" ]]; then
+        log_input_output_size "$input_file" "$output_file" "Alignment with ${method}"
+    fi
+}
+
+should_process_sequence() {
+    # Check if a file should be processed based on SEQUENCE_TYPES filter
+    # Returns 0 (true) if should process, 1 (false) if should skip
+    local file=$1
+    
+    # If no filter specified, process all
+    [[ ${#SEQUENCE_TYPES[@]} -eq 0 ]] && return 0
+    
+    # Check if file matches any of the specified types
+    for seq_type in "${SEQUENCE_TYPES[@]}"; do
+        case "$seq_type" in
+            matk)
+                [[ "$file" == *matk* || "$file" == *matK* ]] && return 0
+                ;;
+            rna)
+                [[ "$file" == *rna* || "$file" == *18s* || "$file" == *18S* ]] && return 0
+                ;;
+            concat)
+                [[ "$file" == *concatenated* || "$file" == *concat* ]] && return 0
+                ;;
+        esac
+    done
+    
+    return 1
 }
 
 generate_MEGA_CC_12_Ubuntu_tree() {
@@ -364,7 +425,9 @@ generate_MEGA_CC_12_Ubuntu_tree() {
     log_info "Generating MEGA tree for $(basename "$aligned_file") | Aligned with $method | Config: $(basename "$config_file")"
 
     # Run MEGA with timing and log output
-    run_with_time_to_log \
+    run_with_space_time_log \
+        --input "$aligned_file" \
+        --output "$output_file" \
         megacc \
             -d "$aligned_file" \
             -a "$config_file" \
@@ -413,7 +476,9 @@ generate_IQTREE2_tree() {
     log_step "IQ-TREE2: $basename | $method"
 
     # Run IQ-TREE2 with timing and bootstrap support
-    run_with_time_to_log \
+    run_with_space_time_log \
+        --input "$aligned_file" \
+        --output "$tree_file" \
         iqtree \
             -s "$aligned_file" \
             -nt AUTO \
@@ -437,9 +502,17 @@ main() {
     setup_logging
     parse_args "$@"
 
-    # Use the INPUT_GROUP_SCRIPT if none were provided: choose subfolders in INPUT_DIR that contain a b_RAW directory
+    # If no CLI groups provided, INPUT_GROUP already contains defaults
+    # If defaults are empty, auto-discover from INPUT_DIR
     if [[ ${#INPUT_GROUP[@]} -eq 0 ]]; then
-        INPUT_GROUP=$INPUT_GROUP_SCRIPT
+        if [[ -d "$INPUT_DIR" ]]; then
+            while IFS= read -r -d '' d; do
+                local base=$(basename "$d")
+                if [[ -d "$d/b_RAW" ]]; then
+                    INPUT_GROUP+=("$base")
+                fi
+            done < <(find "$INPUT_DIR" -mindepth 1 -maxdepth 1 -type d -print0)
+        fi
     fi
 
     if [[ ${#INPUT_GROUP[@]} -eq 0 ]]; then
@@ -450,6 +523,7 @@ main() {
 
     log_step "Starting Phylogenetic Analysis Pipeline"
     log_info "Input groups: ${INPUT_GROUP[*]}"
+    [[ ${#SEQUENCE_TYPES[@]} -gt 0 ]] && log_info "Sequence types: ${SEQUENCE_TYPES[*]}"
 
     for group in "${INPUT_GROUP[@]}"; do
         local query_dir="$INPUT_DIR/$group"
@@ -460,6 +534,13 @@ main() {
             log_step "Step 2: Sequence Alignments for $group"
             for b_RAW_file in "$query_dir/b_RAW/"*.fasta; do
                 [[ ! -f "$b_RAW_file" ]] && continue
+                
+                # Skip if doesn't match sequence type filter
+                if ! should_process_sequence "$b_RAW_file"; then
+                    log_info "Skipping $(basename "$b_RAW_file") (filtered by sequence type)"
+                    continue
+                fi
+                
                 format_fasta_fold_60 "$b_RAW_file"
                 for align_method in "${ALIGNMENT_METHODS[@]}"; do
                     mkdir -p "$query_dir/c_ALIGNMENT/${align_method}_aligned"
@@ -471,44 +552,51 @@ main() {
         fi
 
         if [ "$RUN_PHYLO" = TRUE ]; then
-    log_step "Step 3: Phylogenetic Trees for $group"
+            log_step "Step 3: Phylogenetic Trees for $group"
 
-    for align_method in "${ALIGNMENT_METHODS[@]}"; do
-        #aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
-        aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/concatenated_sequences.fas")
-        for aligned_file in "${aligned_files[@]}"; do
-            [[ ! -f "$aligned_file" ]] && continue
-
-            if [[ "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
-                config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
-            else
-                config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
-            fi
+            for align_method in "${ALIGNMENT_METHODS[@]}"; do
+                # Discover all aligned files
+                aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
                 
-            for software in "${PHYLO_SOFTWARE[@]}"; do
+                for aligned_file in "${aligned_files[@]}"; do
+                    [[ ! -f "$aligned_file" ]] && continue
+                    
+                    # Skip if doesn't match sequence type filter
+                    if ! should_process_sequence "$aligned_file"; then
+                        log_info "Skipping $(basename "$aligned_file") (filtered by sequence type)"
+                        continue
+                    fi
 
-                case "$software" in
+                    if [[ "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
+                        config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+                    else
+                        config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
+                    fi
+                        
+                    for software in "${PHYLO_SOFTWARE[@]}"; do
 
-                    "MEGA_CC_12_Ubuntu")
-                        log_step "$software"
-                        generate_MEGA_CC_12_Ubuntu_tree "$aligned_file" "$align_method" "$config_file" "$output_subdir"
-                        ;;
+                        case "$software" in
 
-                    "IQTREE2")
-                        log_step "$software"
-                        generate_IQTREE2_tree "$aligned_file" "$align_method" "$output_subdir"
-                        ;;
-                    *)
-                        log_error "Unknown software: $software"
-                        ;;
-                esac
+                            "MEGA_CC_12_Ubuntu")
+                                log_step "$software"
+                                generate_MEGA_CC_12_Ubuntu_tree "$aligned_file" "$align_method" "$config_file" "$output_subdir"
+                                ;;
+
+                            "IQTREE2")
+                                log_step "$software"
+                                generate_IQTREE2_tree "$aligned_file" "$align_method" "$output_subdir"
+                                ;;
+                            *)
+                                log_error "Unknown software: $software"
+                                ;;
+                        esac
+                    done
+                done
             done
-        done
-    done
 
-else
-    log_warn "Skipping phylogenetic tree generation (RUN_PHYLO=FALSE)"
-fi
+        else
+            log_warn "Skipping phylogenetic tree generation (RUN_PHYLO=FALSE)"
+        fi
 
     done
 
