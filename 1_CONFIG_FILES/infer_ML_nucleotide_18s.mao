@@ -23,7 +23,7 @@ Substitution Model                   = ====================
 Substitutions Type                   = Nucleotide                          
 Model/Method                         = General Time Reversible model                    
 Rates and Patterns                   = ====================                
-Rates among Sites                    = Gamma Distributed (G)
+Rates among Sites                    = Gamma Distributed with Invariant Sites (G + I)
 No of Discrete Gamma Categories      = 5                                   
 Data Subset to Use                   = ====================                
 Gaps/Missing Data                    = Use all sites                       
