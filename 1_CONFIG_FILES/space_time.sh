@@ -43,7 +43,7 @@ setup_logging() {
 	# Set up logging and output redirection with dual-format support
 	# Skip if already initialized
 	if [[ "${LOGGING_INITIALIZED:-}" == "true" ]]; then
-		log_info "Logging already initialized, skipping setup"
+
 		return 0
 	fi
 	
@@ -87,15 +87,10 @@ setup_logging() {
 	fi
 	
 	export LOGGING_INITIALIZED="true"
-	log_info "Logging to: $LOG_FILE"
-	log_info "Time metrics to: $TIME_FILE"
-	log_info "Space metrics to: $SPACE_FILE"
-	log_info "Combined metrics to: $SPACE_TIME_FILE"
 }
 
 # Error handling and cleanup traps
-trap 'log_error "Command failed (rc=$?) at line $LINENO: ${BASH_COMMAND:-unknown}"; exit 1' ERR
-trap 'log_info "Script finished. See log: $LOG_FILE"; log_info "Time metrics: $TIME_FILE"' EXIT
+#trap 'log_error "Command failed (rc=$?) at line $LINENO: ${BASH_COMMAND:-unknown}"; exit 1' ERR
 
 run_with_space_time_log() {
 	# Usage: run_with_space_time_log [--input PATH] [--output PATH] COMMAND...
