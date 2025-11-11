@@ -23,7 +23,7 @@ Substitution Model                   = ====================
 Substitutions Type                   = Nucleotide                          
 Model/Method                         = Tamura-Nei model                    
 Rates and Patterns                   = ====================                
-Rates among Sites                    = Gamma Distributed With Invariant Sites (G+I)
+Rates among Sites                    = Gamma Distributed (G)
 No of Discrete Gamma Categories      = 5                                   
 Data Subset to Use                   = ====================                
 Gaps/Missing Data                    = Use all sites                       
