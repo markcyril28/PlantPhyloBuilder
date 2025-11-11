@@ -21,7 +21,7 @@ Test of Phylogeny                    = Standard Bootstrap (slow)
 Bootstrap Replicates                 = 1000                                
 Substitution Model                   = ====================                
 Substitutions Type                   = Nucleotide                          
-Model/Method                         = Tamura-Nei model                    
+Model/Method                         = General Time Reversible model                    
 Rates and Patterns                   = ====================                
 Rates among Sites                    = Gamma Distributed (G)
 No of Discrete Gamma Categories      = 5                                   

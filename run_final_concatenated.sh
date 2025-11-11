@@ -12,6 +12,6 @@ log_step "Starting Concatenated Pipeline for $input_group"
 # Process only concatenated sequences
 run_with_space_time_log \
     bash generate_Alignment_and_Phylo.sh --group "$input_group" \
-    --concat --alignment TRUE --phylo TRUE
+    --concat --alignment FALSE --phylo TRUE
 
 log_step "Concatenated Pipeline Completed"

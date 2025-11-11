@@ -12,6 +12,6 @@ log_step "Starting matK Pipeline for $input_group"
 # Process only matK sequences
 run_with_space_time_log \
     bash generate_Alignment_and_Phylo.sh --group "$input_group" \
-    --matk --alignment TRUE --phylo TRUE
+    --matk --alignment FALSE --phylo TRUE
 
 log_step "matK Pipeline Completed"

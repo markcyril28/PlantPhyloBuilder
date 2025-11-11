@@ -50,8 +50,8 @@ readonly ALIGNMENT_METHODS=(
 
 # Phylogenetic software to use
 readonly PHYLO_SOFTWARE=(
-    "MEGA_CC_12_Ubuntu"
     "IQTREE2"
+    "MEGA_CC_12_Ubuntu"
 )
 
 readonly CONFIG_FILE=(
@@ -318,11 +318,11 @@ align_sequences() {
     
     [[ ! -s "$input_file" ]] && { log_warn "Empty input: $input_file"; return 1; }
     if [[ -s "$output_file" ]]; then
-        log_info "Align $method: SKIPPED (exists)"
+        log_info "  ✓ Alignment exists: $(basename "$output_file")"
         return 0
     fi
 
-    log_step "Aligning $basename with $method"
+    log_info "  Aligning $(basename "$input_file")..."
     case "$method" in
         "MUSCLE") 
             run_with_space_time_log \
@@ -357,7 +357,7 @@ align_sequences() {
             log_error "Unknown alignment method: $method"; return 1 ;;
     esac
 
-    log_info "Output alignment: $output_file"
+    log_info "  ✅ Alignment complete: $(basename "$output_file")"
     
     # Log space metrics for alignment
     if [[ -s "$output_file" ]]; then
@@ -418,11 +418,11 @@ generate_MEGA_CC_12_Ubuntu_tree() {
 
     # Skip if already generated
     if [[ -s "$output_file" ]]; then
-        log_info "Tree already exists: $output_file (skipped)"
+        log_info "  ✓ Tree exists: $(basename "$output_file")"
         return 0
     fi
 
-    log_info "Generating MEGA tree for $(basename "$aligned_file") | Aligned with $method | Config: $(basename "$config_file")"
+    log_info "  Generating tree: $(basename "$aligned_file")"
 
     # Run MEGA with timing and log output
     run_with_space_time_log \
@@ -436,9 +436,9 @@ generate_MEGA_CC_12_Ubuntu_tree() {
             > "$mega_log" 2>&1
 
     if [[ -s "$output_file" ]]; then
-        log_info "✅ Tree: $output_file"
+        log_info "  ✅ Tree generated: $(basename "$output_file")"
     else
-        log_error "MEGA12 failed (see $mega_log)"
+        log_error "  ❌ MEGA12 failed (see $(basename "$mega_log"))"
         return 1
     fi
 }
@@ -463,17 +463,17 @@ generate_IQTREE2_tree() {
         return 1
     fi
     if ! command -v iqtree &>/dev/null; then
-        log_error "iqtree not in PATH"
+        log_warn "iqtree not found in PATH - skipping IQ-TREE2 analysis"
         return 1
     fi
 
     # Skip if already generated
     if [[ -s "$tree_file" ]]; then
-        log_info "IQ-TREE2: SKIPPED (exists)"
+        log_info "  ✓ Tree exists: $(basename "$tree_file")"
         return 0
     fi
 
-    log_step "IQ-TREE2: $basename | $method"
+    log_info "  Generating tree: $(basename "$aligned_file")"
 
     # Run IQ-TREE2 with timing and bootstrap support
     run_with_space_time_log \
@@ -488,9 +488,9 @@ generate_IQTREE2_tree() {
             > "$log_file" 2>&1
 
     if [[ -s "$tree_file" ]]; then
-        log_info "✅ Tree: $tree_file"
+        log_info "  ✅ Tree generated: $(basename "$tree_file")"
     else
-        log_error "IQ-TREE2 failed (see $log_file)"
+        log_error "  ❌ IQ-TREE2 failed (see $(basename "$log_file"))"
         return 1
     fi
 }
@@ -523,12 +523,16 @@ main() {
 
     log_step "Starting Phylogenetic Analysis Pipeline"
     log_info "Input groups: ${INPUT_GROUP[*]}"
-    [[ ${#SEQUENCE_TYPES[@]} -gt 0 ]] && log_info "Sequence types: ${SEQUENCE_TYPES[*]}"
+    [[ ${#SEQUENCE_TYPES[@]} -gt 0 ]] && log_info "Sequence types: ${SEQUENCE_TYPES[*]}" || log_info "Sequence types: all"
+    log_info "Alignment: ${RUN_ALIGNMENT} | Phylogenetic tree: ${RUN_PHYLO}"
+    log_info "CPU cores: ${CPU}"
 
     for group in "${INPUT_GROUP[@]}"; do
         local query_dir="$INPUT_DIR/$group"
         local output_subdir="$OUTPUT_DIR/$group"
         mkdir -p "$query_dir/b_RAW" "$output_subdir"
+
+        log_info "Processing group: $group"
 
         if [ "$RUN_ALIGNMENT" = TRUE ]; then
             log_step "Step 2: Sequence Alignments for $group"
@@ -543,6 +547,7 @@ main() {
                 
                 format_fasta_fold_60 "$b_RAW_file"
                 for align_method in "${ALIGNMENT_METHODS[@]}"; do
+                    log_info "  Aligning with $align_method..."
                     mkdir -p "$query_dir/c_ALIGNMENT/${align_method}_aligned"
                     align_sequences "$b_RAW_file" "$align_method" "$query_dir/c_ALIGNMENT/${align_method}_aligned"
                 done
@@ -555,9 +560,18 @@ main() {
             log_step "Step 3: Phylogenetic Trees for $group"
 
             for align_method in "${ALIGNMENT_METHODS[@]}"; do
+                log_info "Checking alignment method: $align_method"
+                
                 # Discover all aligned files
                 aligned_files=("$query_dir/c_ALIGNMENT/${align_method}_aligned/"*.fas)
                 
+                # If no files in method-specific dir, check parent c_ALIGNMENT
+                if [[ ! -f "${aligned_files[0]}" ]]; then
+                    log_info "No files in ${align_method}_aligned/, checking parent c_ALIGNMENT/"
+                    aligned_files=("$query_dir/c_ALIGNMENT/"*.fas)
+                fi
+                
+                local processed_count=0
                 for aligned_file in "${aligned_files[@]}"; do
                     [[ ! -f "$aligned_file" ]] && continue
                     
@@ -567,31 +581,40 @@ main() {
                         continue
                     fi
 
+                    processed_count=$((processed_count + 1))
+                    log_info "[$processed_count] Processing: $(basename "$aligned_file")"
+
                     if [[ "$aligned_file" == *rna* || "$aligned_file" == *18s* ]]; then
                         config_file="$CONFIG_DIR/infer_ML_nucleotide_18s.mao"
+                        log_info "  Type: rRNA/18S | Config: infer_ML_nucleotide_18s.mao"
                     else
                         config_file="$CONFIG_DIR/infer_ML_nucleotide_matK_and_concat.mao"
+                        log_info "  Type: matK/concat | Config: infer_ML_nucleotide_matK_and_concat.mao"
                     fi
                         
                     for software in "${PHYLO_SOFTWARE[@]}"; do
 
                         case "$software" in
-
+                        
                             "MEGA_CC_12_Ubuntu")
-                                log_step "$software"
-                                generate_MEGA_CC_12_Ubuntu_tree "$aligned_file" "$align_method" "$config_file" "$output_subdir"
+                                log_info "  Running MEGA CC 12..."
+                                generate_MEGA_CC_12_Ubuntu_tree "$aligned_file" "$align_method" "$config_file" "$output_subdir" || log_warn "  MEGA_CC_12_Ubuntu failed for $(basename "$aligned_file")"
                                 ;;
 
                             "IQTREE2")
-                                log_step "$software"
-                                generate_IQTREE2_tree "$aligned_file" "$align_method" "$output_subdir"
+                                log_info "  Running IQ-TREE2..."
+                                generate_IQTREE2_tree "$aligned_file" "$align_method" "$output_subdir" || log_warn "  IQTREE2 failed for $(basename "$aligned_file")"
                                 ;;
+
+
                             *)
                                 log_error "Unknown software: $software"
                                 ;;
                         esac
                     done
                 done
+                
+                log_info "Completed $processed_count file(s) for $align_method"
             done
 
         else

@@ -12,6 +12,6 @@ log_step "Starting rRNA/18S Pipeline for $input_group"
 # Process only rRNA/18S sequences
 run_with_space_time_log \
     bash generate_Alignment_and_Phylo.sh --group "$input_group" \
-    --rna --alignment TRUE --phylo TRUE
+    --rna --alignment FALSE --phylo TRUE
 
 log_step "rRNA/18S Pipeline Completed"

@@ -49,7 +49,7 @@ After placing the .deb file  in the ```1_CONFIG_FILES``` and to download all sof
 bash setup_script.sh
 ```
 
-## C. Running Alignment and Phylogenetic Tree Analysis.  
+## B. Running Alignment and Phylogenetic Tree Analysis.  
 
 To run the alignment and create the phylogenetic tree, run the command below. 
 Choose the version you want to run. 
@@ -69,7 +69,7 @@ bash run_final_18s.sh
 bash run_final_Concatenated.sh 
 ```
 
-## D. After Running the Alignment and Phylogenetic Tree Generation 
+## C. After Running the Alignment and Phylogenetic Tree Generation 
 
 - Navigate to the ```logs``` and ```2_PHYLOGENETIC_TREE_RESULTS```. 
 - Copy the log files and output files accordingly to the Shared Google Drive: https://drive.google.com/drive/folders/1Ar0JSUZ1gd1uu7rrL5_Nq-E-tI0jTRci?usp=drive_link
